@@ -1,17 +1,22 @@
 \chapter{Introduction}
-
+\label{chapter1}
 %\minitoc\pagebreak
-
+% Aim for 2-3 pages
 
 \section{Background}
-An intracranial aneurysm is a bulge located in a blood vessel in the brain, and the rupture of an intracranial aneurysm is a very serious incident that has high fatality and morbidity rates \todo{add ref + details}. Unruptured intracranial aneurysms (UIAs) affect approximately $3$-$5 \%$ of the adult population, irrespective of geographical location and/or ethnicity \cite{vlak2011prevalence}. The clinical manifestations of UIAs however, are subtle, with only approximately $10$-$15\%$ of intracranial aneurysms being symptomatic \cite{friedman2001small}. \todo{risk of rupture of aneurysm} Therefore, the diagnosis of an intracranial aneurysm is primarily done through the use of imaging modalities such as intra-arterial digital subtraction angiography (IADSA), computed tomography angiography (CTA) and magnetic resonance angiography (MRA). The diagnosis of aneurysm before symptoms arise allows possible intervention, if deemed necessary based on size and location \todo{ref}. \todo{risk factors?} \todo{differences in imaging modalities?}
+An intracranial aneurysm is a bulge located in a blood vessel in the brain. The rupture of an intracranial aneurysm can lead to a parenchymal hemorrhage, or more commonly to a subarachnoid hemorrhage which is a very serious incident that has high case fatality and morbidity rates \cite{Keedy2006}. Unruptured intracranial aneurysms (UIAs) affect approximately $3$-$5 \%$ of the adult population, irrespective of geographical location and/or ethnicity \cite{vlak2011prevalence}. The clinical manifestations of UIAs however, are subtle, with only approximately $10$-$15\%$ of intracranial aneurysms being symptomatic \cite{friedman2001small}. 
+
+The diagnosis of an UIA is primarily done through the use of three imaging modalities; intra-arterial digital subtraction angiography (IADSA), computed tomography angiography (CTA) and magnetic resonance angiography (MRA). Previously, IADSA was considered the gold-standard in diagnosis, however MRA does not usually require use of contrast agents, and was preferred for pre-operative cases. More recently, CTA and MRA are more often used over IADSA \todo{ref}. A more thorough comparison and description of these three modalities will be given in Chapter \ref{chapter3}. For management of intracranial aneurysms, the risks of rupture are weighed against the risks associated with intervention, with the three main treatment options being observation, endovascular therapy, and surgical therapy \cite{Keedy2006}. Nonetheless, detection of an aneurysm before it becomes symptomatic allows for the possibility of intervention before rupture \todo{intervention == survival?} \todo{ref}. \todo{risk factors?} 
 
 \section{Motivation}
-Due to rapidly growing workload of radiologists and radiology department, it could be beneficial to introduce a reliable method for automated detection of UIAs from diagnostic images of patients.\todo{refs} \todo{more}
+Studies have shown that aneurysms can prove to be quite challenging to detect, with $21$-$40\%$ of all aneurysms being missed during diagnostic screenings depending on the education and experience of an observer. Detectability of an aneurysm is also highly affected by the size and location of the aneurysm \cite{okahara2002diagnostic}. Coupled with the increasing workload of radiologists and surgeons, the necessity of good image processing steps in medical image analysis becomes much more apparent \todo{maybe ref?}.
+
+Segmentation methods with high precision, high reproducibility, and low bias in surgical planning have been shown to directly impact results \cite{Taha2015} \todo{results of what}. However, segmentation of UIAs remains a challenge in all modalities
+\todo{more, necessity of computer aided detection, segmentation in use by radiologists, how modalities are used etc.}
 
 
 \section{Goal}
-Design a neural network. Also, focus on trying to reduce need for large computations by attempting to use 2d networks, but still reproduce aneurysm segmentations in 3d. \todo{elaborate and extend}
+With the necessity of good segmentation of UIAs laid out, in this thesis the various methods employing deep learning already available will be analyzed and compared. A novel deep learning architecture is also introduced, compared and discussed. With the novel method the aim is to focus on reduction of resource usage, and increase in speed, with improvement or little to no effect on accuracy of the resulting segmentation.
 
 
 
