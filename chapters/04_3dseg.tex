@@ -1,16 +1,21 @@
 \chapter{3D Aneurysm Segmentation}
-Various methods of aneurysm detection using 3D neural networks are evaluated with the dataset obtained from the ADAM challenge. This include the DeepMedic framework proposed in \cite{Sichermann2019}, a standard 3D-UNet architecture \cite{3dunet}, as well as the nnUnet architecture \cite{nnUnet} which received first place in the challenge.
+\label{chapter4}
+\todo{Aim for 7 to 9 pages}
+Three methods of segmentation of intracranial aneurysms using 3D neural networks are evaluated with the dataset obtained from the ADAM challenge. This includes the adapted DeepMedic framework proposed by \citeauthor{Sichermann2019}, a standard 3D-Unet architecture initially proposed by \citeauthor{3dunet}, as well as the no-new Unet (nnUnet) architecture proposed by \citeauthor{nnUnet} which was adapted for the \todo{ADAM challenge} and received first place. 
+
+These networks are chosen firstly due to their performance; the 3D-Unet architecture can be used as a baseline after which the proposed network architecture in this work can be measured against, \citeauthor{Sichermann2019} also showed a good DSC with their adapted framework in their study thus making it an interesting addition for comparison, and finally the nnUnet can be regarded as the gold standard architecture due to its peak performance in \todo{ADAM challenge} -- for the same dataset used in this study.
 %\minitoc\pagebreak
+
+In the following sections the architectures used are described and shown along with the experiments run in the study, and how these architectures will be adapted to this case (if any adaptation is needed). \delete{Maybe don't need to say this}
+
+\section{3D-Unet}
+\todo{Go into \citeauthor{3dunet}}
 
 
 \section{DeepMedic}
+\todo{Go into \citeauthor{Sichermann2019}}
 
-
-\section{3D-UNet}
-The architecture used is as shown in figure
-
-
-\section{nnU-Net}
-
+\section{nnUnet}
+\todo{nnUnet describe, go into detailed architecture, probably draw it myself, check if Junma paper for it for the specific challenge}
 
 
