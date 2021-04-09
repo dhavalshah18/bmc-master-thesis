@@ -1,21 +1,34 @@
-\chapter{3D Aneurysm Segmentation}
+\chapter{Prior Networks for Aneurysm Segmentation}
 \label{chapter4}
 \todo{Aim for 7 to 9 pages}
-Three methods of segmentation of intracranial aneurysms using 3D neural networks are evaluated with the dataset obtained from the ADAM challenge. This includes the adapted DeepMedic framework proposed by \citeauthor{Sichermann2019}, a standard 3D-Unet architecture initially proposed by \citeauthor{3dunet}, as well as the no-new Unet (nnUnet) architecture proposed by \citeauthor{nnUnet} which was adapted for the \todo{ADAM challenge} and received first place. 
+
+Three methods of segmentation of intracranial aneurysms using 3D neural networks are evaluated with the dataset obtained from the ADAM challenge. This includes the adapted DeepMedic framework proposed by \citeauthor{Sichermann2019} and initially by \citeauthor{deepmedic}, a standard 3D U-Net architecture initially proposed by \citeauthor{3dunet}, as well as the no-new-Net (nnU-Net) architecture proposed by \citeauthor{nnUnet} which was adapted for the \todo{ADAM challenge} and received first place. 
 
 These networks are chosen firstly due to their performance; the 3D-Unet architecture can be used as a baseline after which the proposed network architecture in this work can be measured against, \citeauthor{Sichermann2019} also showed a good DSC with their adapted framework in their study thus making it an interesting addition for comparison, and finally the nnUnet can be regarded as the gold standard architecture due to its peak performance in \todo{ADAM challenge} -- for the same dataset used in this study.
 %\minitoc\pagebreak
 
 In the following sections the architectures used are described and shown along with the experiments run in the study, and how these architectures will be adapted to this case (if any adaptation is needed). \delete{Maybe don't need to say this}
 
-\section{3D-Unet}
+\section{3D U-Net}
 \todo{Go into \citeauthor{3dunet}}
+The 3D-Unet architecture has an analysis and synthesis path -- also referred to as encoder and decoder paths -- with four steps, each with different resolutions. Each layer in the analysis path contains two convolutions with a kernel size of 3 followed by a rectified linear unit (ReLU), followed by a max pooling layer with a kernel size of 2 and a stride of 2. 
 
 
 \section{DeepMedic}
-\todo{Go into \citeauthor{Sichermann2019}}
+The network proposed by \citeauthor{Sichermann2019} was initially devised by \citeauthor{Kamnitsas2017}; it is a dual pathway, 11-layers deep, 3D Convolutional Neural Network (CNN) originally meant for the task of brain lesion segmentation. Both pathways of the network are identical, however the inputs to the second pathway are downsampled versions of the images in the first pathway. The outputs of both pathways are concatenated before the fully connected layers and finally classified. The full pipeline is shown in \ref{fig:deep-medic.jpg} \todo{Add figure, draw out or copy from paper?}
+
+\img{deep-medic.jpg}{\linewidth}{The neural network DeepMedic, with a 2-pathway architecture. Each layer shows the number of feature maps and their size as number $\times$ size. ReLU activation and batch normalization are also applied after each layer. The diagram is taken from \citeauthor{Sichermann2019}.}{DeepMedic architecture}
+
+Initially, \citeauthor{Kamnitsas2017} proposed DeepMedic to efficiently incorporate both local and contextual information by using the parallel, multi-scale pathways. They also employ a fully-connected Conditional Random Field (CRF) model for final post-processing of the segmentation maps \cite{Krahenbuhl2012}. However, \citeauthor{Sichermann2019} chose to exclude that in favor of thresholding solely based on aneurysm size. Also, in the study, DeepMedic was trained solely on cases that contained intracranial aneurysms, and thus the network could prove to have worse performance on the current dataset. Aneurysms in their dataset also had a mean diameter of $7.10$ mm, much larger than the $4.11$ mm average in the current dataset, which could also further deteriorate performance. \todo{Go further into expected results, like false positive rate, inference time, resource usage}
+
+\todo{Experiments here, including training + preprocessing compared to paper}.
+
+DeepMedic was trained for this task as described in the paper by \citeauthor{Sichermann2019}; with a learning rate of $10^{-4}$, optimization with Adam and a Nesterov momentum of $0.6$, and a hybrid training scheme in which $90\%$ of input image segments correspond to background class and $10\%$ to aneurysm class. They considered and evaluated various pre-processing steps for the best output, however since the other two network models to be evaluated will use only one set of images, this will be the same data used for this model. \todo{write better, haven't talked about pre-processing of data yet}
+
+
 
 \section{nnUnet}
 \todo{nnUnet describe, go into detailed architecture, probably draw it myself, check if Junma paper for it for the specific challenge}
+The "no-new-Net" was presented in \citeyear{nnUnet}, and it is a self-adapting framework on the basis of vanilla U-Nets.
 
 
