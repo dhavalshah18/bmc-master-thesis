@@ -2,16 +2,18 @@
 \label{chapter4}
 \todo{Aim for 7 to 9 pages}
 
-Three methods of segmentation of intracranial aneurysms using 3D neural networks are evaluated with the dataset obtained from the ADAM challenge. This includes the adapted DeepMedic framework proposed by \citeauthor{Sichermann2019} and initially by \citeauthor{deepmedic}, a standard 3D U-Net architecture initially proposed by \citeauthor{3dunet}, as well as the no-new-Net (nnU-Net) architecture proposed by \citeauthor{nnUnet} which was adapted for the \todo{ADAM challenge} and received first place. 
+Three methods of segmentation of intracranial aneurysms using 3D neural networks are evaluated with the dataset obtained from the ADAM challenge. This includes the adapted DeepMedic framework proposed by \citeauthor{Sichermann2019} and initially by \citeauthor{Kamnitsas2017}, a standard 3D U-Net architecture initially proposed by \citeauthor{3dunet}, as well as the no-new-Net (nnU-Net) architecture proposed by \citeauthor{nnUnet} which was adapted for the \todo{ADAM challenge} and received first place. 
 
-These networks are chosen firstly due to their performance; the 3D-Unet architecture can be used as a baseline after which the proposed network architecture in this work can be measured against, \citeauthor{Sichermann2019} also showed a good DSC with their adapted framework in their study thus making it an interesting addition for comparison, and finally the nnUnet can be regarded as the gold standard architecture due to its peak performance in \todo{ADAM challenge} -- for the same dataset used in this study.
+These networks are chosen firstly due to their performance; the 3D-Unet architecture can be used as a baseline after which the proposed network architecture in this work can be measured against, \citeauthor{Sichermann2019} also showed a good DSC with their adapted framework in their study thus making it an interesting addition for comparison, and finally the nnU-Net can be regarded as the gold standard architecture due to its peak performance in \todo{ADAM challenge} -- for the same dataset used in this study.
 %\minitoc\pagebreak
 
 In the following sections the architectures used are described and shown along with the experiments run in the study, and how these architectures will be adapted to this case (if any adaptation is needed). \delete{Maybe don't need to say this}
 
 \section{3D U-Net}
 \todo{Go into \citeauthor{3dunet}}
-The 3D-Unet architecture has an analysis and synthesis path -- also referred to as encoder and decoder paths -- with four steps, each with different resolutions. Each layer in the analysis path contains two convolutions with a kernel size of 3 followed by a rectified linear unit (ReLU), followed by a max pooling layer with a kernel size of 2 and a stride of 2. 
+The 3D-Unet architecture consists of an analysis and synthesis path -- also referred to as encoder and decoder paths -- with four steps, each with different resolutions. Each layer in the analysis path contains two convolutions with a kernel size of 3 followed by a rectified linear unit (ReLU), followed by a max pooling layer with a kernel size of 2 and a stride of 2. Many variations have been proposed to the standard architecture, such as the use of residual connections, attention mechanisms, or dilated convolutions, however as a baseline it can be hypothesized that the standard architecture should perform adequately for this task. Figure \ref{fig:unet.png} illustrates the network architecture.
+
+\img{unet.png}{\linewidth}{\todo{Caption}}{\todo{Small caption}}
 
 
 \section{DeepMedic}
@@ -25,10 +27,15 @@ Initially, \citeauthor{Kamnitsas2017} proposed DeepMedic to efficiently incorpor
 
 DeepMedic was trained for this task as described in the paper by \citeauthor{Sichermann2019}; with a learning rate of $10^{-4}$, optimization with Adam and a Nesterov momentum of $0.6$, and a hybrid training scheme in which $90\%$ of input image segments correspond to background class and $10\%$ to aneurysm class. They considered and evaluated various pre-processing steps for the best output, however since the other two network models to be evaluated will use only one set of images, this will be the same data used for this model. \todo{write better, haven't talked about pre-processing of data yet}
 
+\section{nnU-Net}
+The ``no-new-Net'' was presented in \citeyear{nnUnet}, and it is a self-adapting framework on the basis of vanilla U-Nets. It automatically configures itself including preprocessing, network architecture, training and post-processing for any new task in the biomedical domain. The framework does not introduce a new network architecture (hence the name ``no-new-net'') but rather aims to systematize the process of manual method configuration.
 
+The automatic design of the framework contains three parameter groups: fixed, rule-based and empirical parameters. First, all design choices that do not require adaptation between datasets are collected and their joint configuration optimized -- for example, setting the architecture template to ``U-Net-like''. Second, explicit dependencies are formed between the dataset fingerprint (standardized dataset representation comprising of key properties) and the pipeline fingerprint (choices made during method design). These dependencies are modeled in the form of interdependent heuristic rules. Third, the remaining design choices are set and decided upon empirically based on training data. This forms the basis of the development of the nnU-Net. Figure \ref{fig:nnunet.png} shows the three parameter groups, as well as some specific aspects that go into each.
 
-\section{nnUnet}
-\todo{nnUnet describe, go into detailed architecture, probably draw it myself, check if Junma paper for it for the specific challenge}
-The "no-new-Net" was presented in \citeyear{nnUnet}, and it is a self-adapting framework on the basis of vanilla U-Nets.
+\img{nnunet.png}{\linewidth}{\todo{Caption}}{\todo{Small caption}}
+
+During application of the nnU-Net, despite the few empirical choices to be made, the automatic configuration runs without manual intervention, and thus no additional computation cost beside that of the standard network training procedure is required. The automatic method configuration is initiated with the extraction of the dataset fingerprint followed by execution of the heuristic rules. Three U-Net configurations are generated by default: a 2D U-Net, a 3D U-Net operating on full resolution images, and a 3D U-Net cascade -- where the former U-Net operates on downsampled images, and the latter on full resolution images used to refine the segmentation maps created by the former. The best configuration or ensemble is chosen after cross-validation. 
+
+\todo{I don't know whether to talk about all the parameters, that would be quite a lot. Maybe just parameters similar to what was important for deepmedic, or for me??}
 
 
