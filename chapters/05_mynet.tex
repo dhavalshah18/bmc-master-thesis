@@ -1,4 +1,4 @@
-\chapter{Triplanar-Net}
+\section{Triplanar-Net \todo{name tbd}}
 \label{chapter5}
 \todo{Aim for 5 to 6 pages}
 
@@ -6,11 +6,11 @@ It is computationally demanding to work with three-dimensional volumetric data, 
 
 To obtain better 3D context, 3D reconstruction using the orthogonal views is carried out within the network and the network is trained on 3D labels. This removes the need to naively reconstruct the label after obtaining 2D labels, and also allows the network to learn 3D context while still being lightweight and non-resource intensive. 
 
-The design of the input arms is heavily inspired by the BtrflyNet architecture, but deeper and with three input arms for the three MIPs \cite{sekuboyina2018}. \todo{Talk about conv operations in input path} \todo{Talk about 3D reconstruction} \todo{Talk about 3D upsampling conv operations}. \todo{Talk about number of parameters?}
+The input arms (and concept of using 2D MIPs) is heavily inspired by the BtrflyNet architecture, but the input portion is made deeper and an added axial view is also used \cite{sekuboyina2018}. \todo{more about BtrflyNet, why use that? how it is relevant to add third view in this context?} 
 
 
-\section{Maximum Intensity Projection}
-Maximum Intensity Projection is a method that consists of projecting the voxel with the highest intensity lying in the direction of the plane of projection. It allows representing three-dimensional objects in two dimensions. MIPs have several advantages: vascular structures are well defined and appear clearly as tubular branching structures, the susceptibility to noise is highly reduced due to projecting only the maximum value across a view, and through MIP the use of two dimensional images immensely reduces required resources and parameters. Figure \ref{fig:mip} show axial, coronal and sagittal MIPs obtained from two positive cases in the dataset. 
+\subsection{Maximum Intensity Projection}
+Maximum Intensity Projection is a method that consists of projecting the voxel with the highest intensity lying in the direction of the plane of projection. It allows representing three-dimensional objects in two dimensions. MIPs have several advantages: vascular structures are well defined and appear clearly as tubular branching structures, the susceptibility to noise is highly reduced due to projecting only the maximum value across a view, and through MIP the use of two dimensional images immensely reduces required resources and parameters. Figure \ref{fig:mip} shows axial, coronal and sagittal MIPs obtained from two positive cases in the dataset. 
 
 \begin{figure}[h]
 	\centering
@@ -41,31 +41,47 @@ Maximum Intensity Projection is a method that consists of projecting the voxel w
 \end{figure}
 
 
-As discussed in chapter \ref{chapter3}, the size of aneurysms in a TOF-MRA is very small; the mean diameter of an aneurysm in our dataset being $4.11$ mm. With a re-sampled volume with voxel spacing $0.3 \times 0.3 \times 0.3$ mm\textsuperscript{3}, the mean shape of a volume encompassing an aneurysm would be $21.5 \times 21.5 \times 21.5$ -- assuming a spherical structure of the aneurysm. Axial, coronal and sagittal images (after preprocessing of the TOF-MRA volumes) would have shapes $512 \times 512$, $512 \times 140$, and $512 \times 140$ respectively. Due to this, an MIP taken of the whole three-dimensional TOF-MRA volume, would have little useful information regarding the aneurysm, such as an enlarged vessel. Therefore, as most other training procedures for other networks, Triplanar-Net is trained using patches of the whole volume. MIPs are then taken for the patch of cropped volume, further allowing the network to learn important features with respect to the aneurysm segmentation such as structure and shape. The projections the network learns from are thus as in figure \ref{fig:mip_patch}, which are obtained from cropping a TOF-MRA volume centered around the aneurysm. \todo{Talk about ratio of patches} \todo{Why only positive patches?} \todo{What using only positive patches leads to}.
+As discussed in chapter \ref{chapter3}, the size of aneurysms in a TOF-MRA is very small; the mean diameter of an aneurysm in our dataset being $4.11$ mm. With a re-sampled volume with voxel spacing $0.3 \times 0.3 \times 0.3$ mm\textsuperscript{3}, the mean shape of a volume encompassing an aneurysm would be $21.5 \times 21.5 \times 21.5$ -- assuming a spherical structure of the aneurysm. Axial, coronal and sagittal images (after preprocessing of the TOF-MRA volumes) would have shapes $512 \times 512$, $512 \times 140$, and $512 \times 140$ respectively. Due to this, an MIP taken of the whole three-dimensional TOF-MRA volume, would have little useful information regarding the aneurysm, such as an enlarged vessel. Therefore, as most other training procedures for other networks, Triplanar-Net is trained using patches of the whole volume. MIPs are then taken for the patch of cropped volume, further allowing the network to learn important features with respect to the aneurysm segmentation such as structure and shape. The projections the network learns from are thus as in Figure \ref{fig:mip_patch}, which are obtained from sampling a TOF-MRA volume. 
 
-\todo{is it ok to use MIP as projection method for brain volumes and why, what might be lost using 2D images etc}
+There are other projection methods, however using MIP for cerebral TOF-MRA is appropriate for this task due to the focus on vessels. \todo{is it ok to use MIP as projection method for brain volumes and why, what might be lost using 2D images, maybe contrast of TOF-MRA? etc}
 
+\todo{labels? as mips maybe? but we use 3d labels, so need to find way to show/visualize this}
 
-\section{Network architecture}
-\todo{Figure for network architecture}
+\subsection{Network architecture}
+The proposed Triplanar-Net is a CNN producing a binary segmentation the same size as the 3D patch used to create the MIPs. The model consists of an axial, coronal and sagittal 2D encoder path, a 2D to 3D reconstruction block, and a 3D decoder path, along with skip connections -- see the full architecture in Figure \ref{fig:trinet.pdf}. 
 
-\img{trinet.png}{\linewidth}{\todo{caption}}{TriPlanar-Net architecture.}
+\img{trinet.pdf}{\linewidth}{\todo{caption}}{Triplanar-Net architecture.}
 
-\todo{Explain different parts}
+\img{2d_to_3d.pdf}{0.5\linewidth}{\todo{caption}}{2D to 3D reconstruction block}
 
-\todo{2D MIPs only used as input, however 3D reconstruction is done within network, why? Why use 3D labels for training instead of 2D MIPs? State that since 3D binary labels would be needed as output, instead of reconstructing the volume from three 2D binary labels, it is more effective to reconstruct volume with intermediate representation of the three projections, and obtain 3D binary label after deconvolution.}
+In each encoder path a $1 \times 1$ convolution is applied to the respective input MIP, after which follow three layers containing $3 \times 3$ convolutions (with stride of 1 and padding 1) plus max-pooling with a stride of 2. 
+In the the 2D to 3D reconstruction block, a convolution with kernel size $3 \times 3$ is applied to each of the feature maps of the axial, coronal and sagittal encoder paths. The 3D downsampled representation is constructed by calculating the outer product of the feature maps from the three orthogonal views, and applying a $3 \times 3 \times 3$ convolution. Figure \ref{fig:2d_to_3d.pdf} shows the 2D to 3D reconstruction block.
+Lastly, to upsample the reconstructed 3D representation, the decoder path applies three layers of $4 \times 4 \times 4$ transpose convolutions (stride 2 and padding 1) followed by $3 \times 3 \times 3$ convolutions (stride 1 and padding 1). To take advantage of higher resolution features, skip connections are added that concatenate the output of each convolution operation in the encoder path to an equivalent decoder operation. As the decoder path incorporates three dimensional representations, the high-res features are also passed through their own 2D to 3D reconstruction block. The 3D binary voxelized segmentation of the aneurysm is obtained after applying a $1 \times 1 \times 1$ convolution. To introduce non-linearities to the model, each convolution operation (2D, 3D, and 3D transpose) with a kernel size greater than 1 is followed by an ELU activation function. Batch normalization is also applied after convolution operations (2D, and 3D) in the encoder and decoder paths.
 
-\todo{Math for 2D to 3D reconstruction?}
+Unlike the BtrflyNet architecture, Triplanar-Net constructs a 3D representation within the model (prior to the decoder path) and also does not contain a middle arm that concatenates the feature maps of the three encoder paths. Using a 3D decoder path allows the model to learn valuable 3D context when upsampling the naively reconstructed 3D feature maps, which would otherwise be lost if only 2D feature maps were involved. The parameters in the decoder path also allow to obtain a much more detailed binary segmentation, compared to that of a 2D decoder -- i.e. there would be a lot of aliasing when reconstructing a 3D output from three orthogonal MIP binary outputs for example, therefore it is more effective to create a reconstructed intermediate representation of the three projections within the network and obtain a 3D binary segmentation after decoding. 
 
-\todo{Downsides, and why the added step of classification before each patch should be added for inference.}
+As stated previously the axial, coronal and sagittal images used for training the network are obtained by finding the MIP in each view of a 3D patch cropped from the whole TOF-MRA volume. Multiple sampling schemes for extracting segments were tested; ultimately it was most successful to construct a training batch by extracting segments of size $32 \times 32 \times 32$ in which $90\%$ of the input samples correspond to background class and $10\%$ to foreground class (i.e. voxels containing an aneurysm). For cases in which there are no aneurysms in the TOF-MRA, all segments will only contain background class. This training strategy was employed as it reflects the most realistic distribution of foreground to background class within the data. The network is trained using dice loss which takes the form: 
+
+\[L = 1 - \frac{2\sum_{i}^{N}p_{i}g_{i}}{\sum_{i}^{N}p_{i}^{2} + \sum_{i}^{N}g_{i}^{2}} \]
+
+where $p_{i}$ and $g_{i}$ represent the voxel values of the predicted binary segmentation and the ground truth binary volume, summed over $N$ voxels \cite{milletari2016v}. The network is trained with 5-fold cross validation using the AdamW optimizer for 100 epochs per fold. L2 regularization of $1e-5$ is also used during training to reduce overfitting.
 
 \todo{Advantages over other networks}
+In comparison to the networks briefly described in Chapter \ref{chapter4}, Triplanar-Net consists of a more shallow architecture, as well as both 2D and 3D convolutions. Generally, a shallower network can lead to poorer overall results be it for any task. However, by efficiently combining two dimensional and three dimensional data and convolutions, the network is able to be lightweight. \todo{probably reiterate}. 
 
-\section{Complete workflow}
-\todo{Workflow including classification, preprocessing, processing}
+Once trained, inference for a given input TOF-MRA volume proceeds as: segments of the volume are sampled on a grid, axial, coronal and sagittal MIPs are obtained for each segment and fed to the network. The output segmentation of the TOF-MRA volume is built by concatenating the network output of each segment.
 
-\section{Inference}
-\todo{Maybe remove section and add in complete workflow}
-\todo{Talk about way to infer, math and shit maybe about 3D reconstruction}
+%\todo{removed classifier/full pipeline part because think i can get it to work without}
+%Training the network on only segments centered on the foreground (apart from negative cases) causes the network to produce segmentations with a high number of false-positives. To mitigate this as well as to allow Triplanar-Net to focus on accurate segmentation of aneurysms, it is proposed to add an initial classification step during inference on a TOF-MRA volume. The classifier evaluates whether a certain patch of the TOF-MRA volume contains a vessel with an aneurysm. If positively classified, the segment goes through to Triplanar-Net for aneurysm segmentation, and if negatively classified then no foreground pixels are segmented in the patch. The full framework for inference for any TOF-MRA volume can be seen in Figure \ref{full_pipeline.pdf}. The classifier network can also be seen in figure \todo{network for classifier}. The classifier network is trained on 3D segments of the same size as those used for training Triplanar-Net, using a uniform sampling scheme. We require that this classifier has a high sensitivity, and favors false-positives over false-negatives. Thus, it is trained using cross-entropy loss with a larger weight given to a positively classified volume. \info{elaborate/maybe write better}.
+%
+%\img{full_pipeline.pdf}{\linewidth}{\todo{caption}}{Full pipeline for inference.}
+%
+%Adding this classifier prior to Triplanar-Net is hypothesized to not heavily increase resource usage or heavily impede inference; most segments of the TOF-MRA volume will only go through one network (either the classifier or Triplanar-Net) since a very small number of segments (out of $N$ segments sampled from the TOF-MRA volume) contain an aneurysm. A segment is only processed by both the classifier and Triplanar-Net if an aneurysm is detected to be within it. The complete binary segmentation map for the TOF-MRA volume is then reconstructed by combining -- according to the coordinates of the sampled segment -- the $x$ binary segmentations from Triplanar-Net and $y$ binary segmentations that are known to not contain an aneurysm.
+%
+%An alternative to using this framework with a combined classifier and Triplanar-Net would be to use post-processing after obtaining the binary segmentation map of a segment and altogether not use the classifier at all. However, this was opted against as this \todo{Why not?}
+%
+%\todo{ablation study in appendix to show design choices, i.e. no skip blocks, no combination path, 2d decoders instead of 3d}
+
+
 
 

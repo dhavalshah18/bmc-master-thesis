@@ -1,3 +1,27 @@
 \chapter{Discussion}
 \label{chapter7}
 \todo{Aim for 6 to 7 pages}
+
+In this study, two pre-existing networks were presented and used to assess the validity of our proposed network (Triplanar-Net), against a publicly available (train) dataset for cerebral UIA segmentation. Segmentation metrics are reported for both the train dataset and the non-publicly available dataset (test). The results shown for Triplanar-Net are lower than those reported for the SOTA -- the nnU-Net, however the network performs better than the well established DeepMedic network architecture. All three network architectures still show room for substantial improvement on the test dataset. Compared to the reported interobserver results by \citeauthor{Timmins2020}, the segmentation results are lower. It is also shown that in this study, it is possible to harvest 2D data and attempt to accurately reconstruct and learn 3D labels from it. 
+
+The potential of neural networks to detect and segment UIAs in TOF-MRA's has been demonstrated previously, and the MICCAI2020 challenge presented by \citeauthor{Timmins2020} was an initiative that encouraged further exploration into this field. The steadily increasing workload of the radiology departments due to the growing necessity of radiological imaging must be managed; the introduction of more computer-aided diagnosis and detection tools in this regard can prove to show great improvement -- by possibly reducing diagnostic errors for example. \todo{Talk about segmentation explicitly}.
+
+Based on the reported metrics, the results of the nnU-Net far surpass the results produced by DeepMedic and by Triplanar-Net on both the train dataset and the test dataset. With a Dice Score Coefficient of 0.812 on the train dataset the nnU-Net shows superior accuracy in terms of segmentation over DeepMedic and Triplanar-Net \todo{Add numbers for both}. The Hausdorff distance is also the least for the nnU-Net architecture with 0.486 mm compared to a large value of 59.7 mm for DeepMedic and \todo{Triplanar-Net MHD}. The high performance of the nnU-Net reported on the train dataset is also reflected in the test dataset with a DSC of 0.410 and a Hausdorff distance of 8.96, which both DeepMedic and Triplanar-Net could not surpass. The sensitivities of the three frameworks show some more similarities than the segmentation metrics, with nnU-Net outperforming DeepMedic and Triplanar-Net in the train dataset. However, DeepMedic shows to outperform both nnU-Net and Triplanar-Net with a sensitivity of 0.85 compared to 0.61 and 0.76 respectively. This could however be because of the large False Positive Count, i.e. DeepMedic has a fewer amount of false negatives due to the fact that it contains much more positive detections.
+
+Triplanar-Net does outperform DeepMedic in all metrics across the board for both the train and test dataset -- with sensitivity being the only exception. The proposed network cannot however come near the results put forth by the SOTA.
+
+Taking a look at the results of the further evaluations: considering inference time of each network, nnU-Net is very resource intensive with almost 150 times more parameters than both DeepMedic and Triplanar-Net. Using a larger network -- one with more parameters -- is most likely one of the reasons the nnU-Net outperforms both the other two networks. nnU-Net and DeepMedic both use only 3D convolutions, and thus the inference time per case (not including pre- and postprocessing) is much larger than that of Triplanar-Net which combines the use of both 2D and 3D convolution operations. It is surprising that DeepMedic contains a slightly smaller amount of parameters than Triplanar-Net but takes almost the same amount of inference time as nnU-Net; this could be accounted by the parameters introduced in Triplanar-Net by adding the skip connections which are not present in DeepMedic. Even though the time to infer could be considered a valuable metric if an automated system is employed in a real-time clinical setting, if the segmentation accuracy cannot be on par with the SOTA then this cannot be deemed an important factor, and the same can be said for the number of parameters.
+
+Evaluating segmentation performance of the networks on only true positive detections also made an impact: 
+
+\todo{Discuss how this is a difficult task with this dataset}
+
+
+
+\todo{Discuss how that when we use only segmentation results of true UIAs, results aren't so bad}
+
+\todo{Discuss how inference time of my net is a lot better, as well as number of parameters}
+
+\todo{Discuss all further analysis}
+
+\todo{Discuss train vs test performance}
