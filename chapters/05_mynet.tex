@@ -1,12 +1,11 @@
-\section{Triplanar-Net \todo{name tbd}}
+\section{Triplanar-Net}
 \label{chapter5}
-\todo{Aim for 5 to 6 pages}
 
 It is computationally demanding to work with three-dimensional volumetric data, and consequently with three-dimensional neural networks (such as the ones shown in chapter \ref{chapter4}); this applies even more so for the case of aneurysm segmentation where localization is difficult due to the size of aneurysms. This could be overcome by using low-resolution data or by using shallow networks, however this would adversely affect performance. Therefore the proposed network architecture works with 2D projections of patches of the volumetric data. Since we are working with cerebral TOF-MRAs for the task of aneurysm segmentation, the projections used are axial, coronal and sagittal Maximum Intensity Projections (MIPs). 
 
 To obtain better 3D context, 3D reconstruction using the orthogonal views is carried out within the network and the network is trained on 3D labels. This removes the need to naively reconstruct the label after obtaining 2D labels, and also allows the network to learn 3D context while still being lightweight and non-resource intensive. 
 
-The input arms (and concept of using 2D MIPs) is heavily inspired by the BtrflyNet architecture, but the input portion is made deeper and an added axial view is also used \cite{sekuboyina2018}. \todo{more about BtrflyNet, why use that? how it is relevant to add third view in this context?} 
+The input arms (and concept of using 2D MIPs) is heavily inspired by the BtrflyNet architecture, but the input portion is made deeper and an added axial view is also used \cite{sekuboyina2018}. During inference, the sagittal and coronal output heatmaps of the BtrflyNet architecture are combined using the outer product to create a 3D heatmap. Triplanar-Net similarly uses the outer product to reconstruct a 3D volume, although this is done within the network architecture and 3D labels are also used for training the network unlike for the BtrflyNet architecture.
 
 
 \subsection{Maximum Intensity Projection}
@@ -24,7 +23,7 @@ Maximum Intensity Projection is a method that consists of projecting the voxel w
 %		\phantomsubcaption
 %		\label{fig:mip_10028.png}
 	\end{subfigure}
-	\caption[Maximum Intensity Projections of two positive cases.]{\todo{caption}}
+	\caption[Maximum Intensity Projections of two positive cases.]{Images A1 and A2 show axial MIPs of two different cases that contain UIAs, and similarly B1, B2 and C1, C2 show sagittal and coronal views of MIPs respectively. The cases used are from the train dataset available via the ADAM challenge \cite{Timmins2020}.}
 	\label{fig:mip}
 \end{figure}
 
@@ -36,7 +35,7 @@ Maximum Intensity Projection is a method that consists of projecting the voxel w
 	\begin{subfigure}{\linewidth}
 		\includegraphics[width=\linewidth]{figures/mip_patch10028.png}
 	\end{subfigure}
-	\caption[Maximum Intensity Projections of two positive cases.]{\todo{caption}}
+	\caption[Patches of Maximum Intensity Projections of two positive cases.]{Similarly to Figure \ref{fig:mip}, patches of axial, sagittal and coronal (A, B, and C) MIP images of two positives cases, are shown -- with the 3D patch from which the MIP is taken extracted with the aneurysm centered.}
 	\label{fig:mip_patch}
 \end{figure}
 
@@ -45,14 +44,12 @@ As discussed in chapter \ref{chapter3}, the size of aneurysms in a TOF-MRA is ve
 
 There are other projection methods, however using MIP for cerebral TOF-MRA is appropriate for this task due to the focus on vessels. \todo{is it ok to use MIP as projection method for brain volumes and why, what might be lost using 2D images, maybe contrast of TOF-MRA? etc}
 
-\todo{labels? as mips maybe? but we use 3d labels, so need to find way to show/visualize this}
-
 \subsection{Network architecture}
 The proposed Triplanar-Net is a CNN producing a binary segmentation the same size as the 3D patch used to create the MIPs. The model consists of an axial, coronal and sagittal 2D encoder path, a 2D to 3D reconstruction block, and a 3D decoder path, along with skip connections -- see the full architecture in Figure \ref{fig:trinet.pdf}. 
 
-\img{trinet.pdf}{\linewidth}{\todo{caption}}{Triplanar-Net architecture.}
+\img{trinet.pdf}{\linewidth}{Proposed network architecture for Triplanar-Net. Three input arms each take an MIP of either the axial, coronal or sagittal view extracted from a 3D patch. The inputs are encoded using 2D convolutions operations and max pooling before going through the 2D to 3D reconstruction block, and being decoded with 3D transpose convolutions followed by 3D convolutions. The convolution kernel size, padding size, and stride are represented as \{kernel.padding.stride\} in the image and the number of channels is shown within each block.}{Triplanar-Net architecture.}
 
-\img{2d_to_3d.pdf}{0.5\linewidth}{\todo{caption}}{2D to 3D reconstruction block}
+\img{2d_to_3d.pdf}{0.5\linewidth}{Diagram of the 2D to 3D reconstruction block used in the Triplanar-Net architecture. Three inputs are given to the block -- representing the axial, sagittal and coronal MIPs. A 2D convolution with a kernel size of 3, padding 1 and stride 1 is applied to each input. The orthogonal views are then combined by taking the outer product, and a 3D convolution with kernel size of 3, padding 1 and stride 1 is applied to reconstructed 3D image.}{2D to 3D reconstruction block.}
 
 In each encoder path a $1 \times 1$ convolution is applied to the respective input MIP, after which follow three layers containing $3 \times 3$ convolutions (with stride of 1 and padding 1) plus max-pooling with a stride of 2. 
 In the the 2D to 3D reconstruction block, a convolution with kernel size $3 \times 3$ is applied to each of the feature maps of the axial, coronal and sagittal encoder paths. The 3D downsampled representation is constructed by calculating the outer product of the feature maps from the three orthogonal views, and applying a $3 \times 3 \times 3$ convolution. Figure \ref{fig:2d_to_3d.pdf} shows the 2D to 3D reconstruction block.
@@ -66,8 +63,7 @@ As stated previously the axial, coronal and sagittal images used for training th
 
 where $p_{i}$ and $g_{i}$ represent the voxel values of the predicted binary segmentation and the ground truth binary volume, summed over $N$ voxels \cite{milletari2016v}. The network is trained with 5-fold cross validation using the AdamW optimizer for 100 epochs per fold. L2 regularization of $1e-5$ is also used during training to reduce overfitting.
 
-\todo{Advantages over other networks}
-In comparison to the networks briefly described in Chapter \ref{chapter4}, Triplanar-Net consists of a more shallow architecture, as well as both 2D and 3D convolutions. Generally, a shallower network can lead to poorer overall results be it for any task. However, by efficiently combining two dimensional and three dimensional data and convolutions, the network is able to be lightweight. \todo{probably reiterate}. 
+In comparison to the networks described in Chapter \ref{chapter4}, Triplanar-Net consists of a more shallow architecture, as well as both 2D and 3D convolutions. Generally, a shallower network can lead to poorer overall results be it for any task. However, by efficiently combining two dimensional and three dimensional data and convolutions, the network is able to be lightweight.  
 
 Once trained, inference for a given input TOF-MRA volume proceeds as: segments of the volume are sampled on a grid, axial, coronal and sagittal MIPs are obtained for each segment and fed to the network. The output segmentation of the TOF-MRA volume is built by concatenating the network output of each segment.
 
