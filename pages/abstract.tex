@@ -1,3 +1,11 @@
 \chapter*{\abstractname}
 
-\lipsum[20]
+Accurate segmentation of unruptured intracranial aneurysms (UIAs) is important to quantify aneurysms and assess risk of rupture to allow informed treatment and planning decisions to be made \cite{White2001}. Introducing a reliable, automatic 3D segmentation method could be beneficial to improve aneurysm quantification for this purpose. The Triplanar-Net architecture was therefore designed for the task of segmenting UIAs in 3D TOF-MRA images, with the aim of also reducing inference time and required resources for producing an accurate segmentation.
+
+The dataset made available as part of the MICCAI2020 ADAM challenge by \citeauthor{Timmins2020} was used to train Triplanar-Net for the segmentation, and the network was submitted for evaluation on the non-publicly available dataset. Two other networks that have been used previously for this task are also explored, and evaluated -- DeepMedic and nnU-Net, with nnU-Net being the winning submission to the challenge. The train dataset consisted of 113 cases with a total of 129 aneurysms, with both negative and positive cases being present (cases with and without aneurysms).
+
+The basis of Triplanar-Net is to use 2D MIP projections in the axial, coronal and sagittal views to produce a 3D binary output segmentation of a TOF-MRA volume, with pixels labelled as foreground representing segmented aneurysms. By using 2D inputs, the trainable parameters of the network can be drastically reduced and the overall inference time also improved.
+
+The task of segmentation was evaluated using the dice similarity coefficient (DSC), modified hausdorff distance (95th percentile) (MHD), and volumetric similarity (VS), and reported over the train and test dataset for the nnU-Net, DeepMedic and Triplanar-Net architectures.
+
+Based on segmentation metrics, the proposed Triplanar-Net is not able to perform on par with the SOTA but is able to perform better than the DeepMedic architecture. This suggests that further work needs to be done in attempting to use 2D projections for 3D segmentations, and also that this proposed network cannot be recommended to be used in a clinical setting as it is presented.
