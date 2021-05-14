@@ -1,18 +1,16 @@
 \chapter{Results}
 \label{chapter6}
 
-The task of segmenting the aneurysm in the TOF-MRA image is evaluated with the use of three metrics: Dice Similarity Coefficient (DSC), Modified Hausdorff Distance (MHD) (95\textsuperscript{th} percentile), and Volumetric Similarity (VS). The overlap of the prediction and ground truth segmentation map is evaluated using DSC. Compared to DSC, MHD is a distance metric and is sensitive to the overall shape of the segmentation. As the name applies, VS is a measure that considers volumes of the segmentations to indicate similarity. These are reported for the networks described in Chapter \ref{chapter4} -- DeepMedic, and nnU-Net -- and for Triplanar-Net. The metrics are evaluated with using two datasets -- train, and test. The train dataset comprises the publicly available data from the ADAM challenge, and the test dataset the non-publicly available data from the same \cite{Timmins2020}. During training of all networks, the train dataset was split into training and validation sets, with cross-validation, however for methodological reasons when reporting results the train dataset is not split. The results for Triplanar-Net are for the complete framework, i.e. including the classifier.
+The task of segmenting aneurysms in TOF-MRA images is evaluated with the use of three metrics: Dice Similarity Coefficient (DSC), Modified Hausdorff Distance (MHD) (95\textsuperscript{th} percentile), and Volumetric Similarity (VS). The overlap of the prediction and ground truth segmentation map is evaluated using DSC. Compared to DSC, MHD is a distance metric and is sensitive to the overall shape of the segmentation. As the name implies, VS is a measure that considers volumes of the segmentations to indicate similarity. These are reported for the networks described in Chapter \ref{chapter4} -- DeepMedic, and nnU-Net -- and for Triplanar-Net. The metrics are evaluated using two datasets -- train, and test. The train dataset comprises the publicly available data from the ADAM challenge, and the test dataset the non-publicly available data from the same \cite{Timmins2020}. During training of all networks, the train dataset was randomly split into training and validation sets while ensuring that the distribution of positive to negative scans is maintained. To note, in the results shown in the following sections when referring to the ``train dataset'', this actually means the validation split that was manually taken from the publicly available train dataset as part of the ADAM challenge \cite{Timmins2020}. Therefore the reported results are on cases which each network was not trained on. The results were obtained on the test dataset by submitting docker containers of the method to \citeauthor{Timmins2020}, as the test dataset is not publicly available. The evaluation is done by the authors of the challenge, and the metric results are reported. It is not possible to run the further analyses on the results of the test dataset, and thus these are only evaluated for the train dataset.
 
 Each segmented voxel or connected component of voxels is considered a positive detection. A positive detection corresponding to an aneurysm is considered a true-positive finding, whereas a positive detection not corresponding to an aneurysm was considered a false-positive finding.
 
 The number of parameters of each network, and the inference time for a scan is also reported. Inference time per case is reported without taking into account time required for preprocessing of the data. It should be noted that DeepMedic runs on a Tensorboard backend, whereas the other networks use PyTorch. 
 
-It is also interesting to further analyze the results with respect to each network: results such as the segmentation performance of true UIAs, and segmentation performance based on size of UIAs are also assessed. It is not possible to perform these assessments on the test dataset as it is not publicly available, so the reporting is done only on the train dataset. 
-
-To note, in the results shown in the following sections when referring to the ``train dataset'', this actually means the validation split that was manually taken from the publicly available train dataset as part of the ADAM challenge \cite{Timmins2020}. Therefore the reported results are on cases which each network was not trained on. The results were obtained on the test dataset by submitting docker containers of the method to \citeauthor{Timmins2020}, as the test dataset is not publicly available. The evaluation is done by the authors of the challenge, and the metric results are reported. It is not possible to run the further analyses on the results of the test dataset, and thus these are only evaluated for the train dataset.
+It is also interesting to further analyze the results with respect to each network: results such as the segmentation performance of true UIAs, segmentation performance based on size of UIAs, and performance on negative scans are also assessed. It is not possible to perform these assessments on the test dataset as it is not publicly available, so the reporting is done only on the train dataset. 
  
 \section{Metrics}
-Results are shown for the segmentation metrics evaluated on the full TOF-MRA volumes in Table \ref{table:metrics_full} for both the train set and the test set. Figure \ref{fig:results} shows the box plots of the segmentation metrics for the evaluated networks.
+Results are shown for the segmentation metrics evaluated on the full TOF-MRA volumes in Table \ref{table:metrics_full} for both the train set and the test set. The interobserver results are taken from the study performed by \citeauthor{Timmins2020}, which are found based on measurements made by two separate observers on a subset of the scans. Figure \ref{fig:results} shows the box plots of the segmentation metrics for the evaluated networks.
 
 
 \begin{table}[htp]
@@ -27,9 +25,12 @@ Results are shown for the segmentation metrics evaluated on the full TOF-MRA vol
 		nnU-Net & \textbf{0.81} & \textbf{0.49} & \textbf{0.89} & \textbf{0.41} & \textbf{8.96} & 0.50 \\
 		DeepMedic & 0.11 & 59.70 & 0.33 & 0.07 & 71.41 & 0.34 \\
 		Triplanar-Net & 0.14 & 53.90 & 0.42 & 0.11 & 62.35 & \textbf{0.53} \\
+		interobserver & N/A & N/A & NA & 0.63 & 2.42 & 0.76 \\
 	\end{tabular}
-	\caption[Segmentation results.]{The mean segmentation metrics of each network architecture evaluated on the publicly available train dataset and the test dataset. Results in bold show the best value for that specific metric.}
+
+	\caption[Segmentation results.]{The mean segmentation metrics of each network architecture evaluated on the publicly available train dataset and the test dataset. Results in bold show the best value for that specific metric for the evaluated network architectures.}
 	\label{table:metrics_full}
+	
 \end{table}
 
 \begin{table}[hp]

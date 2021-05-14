@@ -1,5 +1,8 @@
 \chapter{Conclusion}
 \label{chapter8}
-\todo{Aim for 3 to 4 pages}
+This study could not demonstrate that the proposed Triplanar-Net could perform on par with the SOTA to segment UIAs in TOF-MRA images. A dataset comprising of both positive, and negative scans, acquisitions of varying field strengths, varying image quality, and varying voxel sizes was used, which was made available as part of the MICCAI2020 ADAM challenge run by \citeauthor{Timmins2020}. The dataset is a difficult one to perform accurate segmentations on, as made clear by the fact that DeepMedic -- another network evaluated on the dataset -- performed poorly as compared to the study carried out by \citeauthor{Sichermann2019} with their own in-house dataset. 
 
+The concept of using 2D MIPs taken of patches of 3D volumes is an approach that has not been deeply explored in this setting, especially if a 3D segmentation is the required output. Reconstructing a 3D volume from the projections is a challenge, however the proposed network was able to introduce some learned parameters to the reconstruction to attempt to improve on the naive method of reconstructing using the outer product. 
+
+In the future, further development of methods for segmentation of UIAs will be required before being able to accurately segment and quantify UIAs automatically in TOF-MRA images, at least to the same level as that possible of a radiologist.
 

@@ -55,7 +55,7 @@ Intracranial aneurysms chiefly develop in the arterial part of the circle of Wil
 
 Size of UIAs are variant and can also be significantly dependent on the site the aneurysm presents itself. A study conducted on a database of patients between 1967 and 1987 that were treated for aneurysms found the mean size of UIAs to be $7.8$ mm, with a median size of $5$ mm \cite{Weir2002}. Of the same patients, the bulk of aneurysms were $\leq 10$ mm; $27\%$ were $\leq 3$ mm, and $58\%$ were $4$--$10$ mm in size.
 
-The sensitivity and specificity of 3D TOF-MRA to detect the presence of an intracranial aneurysm over 3 mm in size is 86 to 98\% and 75 to 96\% respectively \cite{Sailer2014}. However, it has also been reported that the detection of UIAs by radiologists from TOF-MRAs of aneurysms $\leq 5$ mm can have a sensitivity as low as 35\% \cite{White2001}.
+The sensitivity and specificity of 3D TOF-MRA to detect the presence of an intracranial aneurysm over 3 mm in size is 86\% to 98\% and 75\% to 96\% respectively \cite{Sailer2014}. However, it has also been reported that the detection of UIAs by radiologists from TOF-MRAs of aneurysms $\leq 5$ mm can have a sensitivity as low as 35\% \cite{White2001}.
 
 \subsection{Dataset}
 The dataset used during the course of this study was obtained from the Aneurysm Detection And segMentation (ADAM) Challenge 2020; a medical image analysis challenge organized as part of MICCAI 2020 \cite{Timmins2020}. The available dataset of 3D TOF-MRAs consists of 113 train cases -- composed of 93 volumes containing at least one untreated, unruptured aneurysm (35 baseline and 35 follow-up of the same subject, and 23 unique subjects), and 20 volumes without intracranial aneurysms -- and 141 test cases, which submitted methods for the challenge were evaluated against. Table \ref{table:adam_files} lists the various files available as part of this training data according to the folder structure of each case file, as well as some information regarding contents of the files. Some files are not listed -- such as the structural image (T1, T2 or FLAIR) -- as these will not be used for our purposes and hence are not relevant.
@@ -70,8 +70,10 @@ The dataset used during the course of this study was obtained from the Aneurysm 
 	/aneurysms.nii.gz & A label image for the aneurysm present in the original TOF-MRA image.\\
 	/location.txt & Text file containing voxel coordinates x, y, and z of center of mass and radius for all unruptured, untreated aneurysms. \\
 	\end{tabular}
+		
 	\caption[Table of files contained dataset]{Files available per case from ADAM challenge and their respective information \cite{Timmins2020}.}
 	\label{table:adam_files}
+	
 \end{table}
 
 The original TOF-MRA images are anonymised, and vary in magnetic field strength, repetition time, and echo time used to acquire said image. The scans were performed on scanners with field strengths of 1, 1.5 or 3 T. There was no set acquisition protocol of the MRAs, as they are taken from several clinical studies spanning between 2001 and 2019. The median age of subjects with UIAs (53 subjects) was 55 years, with 75\% of subjects being female.
@@ -106,4 +108,4 @@ The imaging modalities widely used in the diagnosis of intracranial aneurysms is
 
 IADSA is widely regarded as the gold standard for intracranial aneurysm detection, due to its high spatial resolution. However, in comparison to IADSA and CTA, TOF-MRA does not require the use of intravenous contrast material, as the signal obtained during imaging depends on the magnetic properties of the area being imaged. IADSA is also costly, time-consuming and invasive. CTA also has some advantages over MRA; CTA is widely available, less susceptible to motion artifacts, and in a clinical setting it can be performed directly after subarachnoid hemorrhage is detected. Due to these reasons, it is recommended to use either CTA or TOF-MRA for pre-surgical screening, and UIA monitoring \cite{Keedy2006, Sailer2014, Wardlaw2000}. TOF-MRA is also well-suited for routine follow-up imaging as it does not need any contrast agent or radiation \cite{Lane2015}.
 
-\todo{Get images of each modality?}
+%\todo{Get images of each modality?}

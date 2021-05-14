@@ -1,5 +1,35 @@
-\chapter{Appendix: Ablation study}
-\todo{Mention various network architectures attempted, and then finally a table with the scores of each}
+\chapter{Appendix: Ablation study for network architecture design}
+\label{appendix1}
 
-\section{I am an appendix}
+Before arriving to the network architecture shown in Chapter \ref{chapter5} for Triplanar-Net, other network architectures were also designed with the same concept of attempting to employ the use of 2D MIPs to segment aneurysms in 3D TOF-MRA images. In particular, the BtrflyNet architecture, the BtrflyNet with an added third input arm -- Figure \ref{fig:triflynet.pdf}, and the BtrflyNet with a 3D decoder substituting the 2D decoder -- Figure \ref{fig:3dtriwingednet.pdf} were the networks tested. Small variations of these networks were also tested, such as removing the skip connection or varying the channels in each layer. All these architectures proved to not be able to even overfit well enough on data used to train the architecture, and thus the final iteration of Triplanar-Net was decided upon. The DSC of each network evaluated on full volumes of the cases used to train the network are shown in Table \ref{table:iterations}. Only the DSC is reported so as to only to show one necessary metric to evaluate the segmentation performance.
+
+\img{triflynet.pdf}{\linewidth}{Design iteration 1. Proposed architecture for variation of BtrflyNet with an additional third input arm, taking inputs as axial, coronal and sagittal MIPs and obtaining axial, coronal and sagittal MIP labels.}{Design iteration 1.}
+
+\img{3dtriwingednet.pdf}{\linewidth}{Design iteration 2. Proposed architecture for variation of design iteration 1 using a 2D to 3D reconstruction block and a 3D decoder.}{Design iteration 2.}
+
+\begin{table}[htp]
+	\centering
+	
+	\begin{tabular}{l | r}
+		& DSC \\
+		\hline
+		Design iteration 1 & 0.14 \\
+		Design iteration 1 (no skip) & 0.09 \\
+		Design iteration 2 & 0.23 \\
+		Design iteration 2 (with skip) & 0.37 \\
+		Triplanar-Net & \textbf{0.62}
+	\end{tabular}
+
+	\caption[Evaluation on training data for architecture designs before Triplanar-Net.]{DSCs reported for full volumes of training data for design iterations and variations.}
+	\label{table:iterations}
+\end{table}
+
+The issue with design iteration 1 was presumed to be that the complete loss of 3D context within this architecture manifests in a poor performing network; having to reconstruct the 3D binary output segmentation after obtaining the 2D MIP labels of each view could be changed to allow combining of the three labels in a less naive method. Therefore, it was opted to change to design iteration 2, in which a 3D decoder is used after reconstructing the 3D labels within the network using the 2D to 3D reconstruction block as mentioned in Chapter \ref{chapter5}. It was also interesting to see the addition and removal of skip connections in design iteration 2. Finally, to arrive at the chosen design for Triplanar-Net, the middle arm of design iteration 2 was removed as concatenating the intermediate features of the three input arms was hypothesized to not be a useful use of the processed features.
+
+A further experiment was also carried out to use a 2-staged pipeline to segment aneurysms. The first stage being localizing the aneurysm, and the second stage involving the actual segmentation. The pipeline can be seen in Figure \ref{fig:full_pipeline.pdf}. The hope with using this 2-stage pipeline was to reduce false positives. In the end, although various architectures were attempted for the first stage, the specificity and sensitivity were too low to warrant using a 2-staged approach for the task. If a classifier network is unable to detect accurately enough whether a certain patch contains an aneurysm, than the chance of false negatives for the full pipeline would be drastically increased. This pipeline was experimented with various classifier networks and segmentation networks (with the iterations discussed), and the maximum sensitivity and specificity achieved (for the first stage) was 0.84 and 0.77 respectively.
+
+\img{full_pipeline.pdf}{\linewidth}{Proposed 2-staged pipeline, incorporating classification of a specific input patch before performing segmentation. The hope is to reduce false positives, while not drastically increasing workload and amount of required resources.}{Proposed 2-staged pipeline for inference.}
+
+
+
 
